@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -16,16 +17,21 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     try {
-      // Call your backend login API
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
-      // Pass user info and token to context
+      const res = await axios.post('/api/auth/login', form);
       login(res.data.user, res.data.token);
-      // Redirect handled by context or here if needed
-      navigate('/dashboard');
+
+      // Role-based redirect
+      if (res.data.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     }
+    setLoading(false);
   };
 
   return (
@@ -49,7 +55,9 @@ const Login = () => {
           onChange={handleChange}
           required
         /><br />
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
       <p>
         Don't have an account? <a href="/register">Register</a>

@@ -1,28 +1,27 @@
 import React, { createContext, useContext, useState } from 'react';
 
-// Create the context
 const AuthContext = createContext();
 
-// AuthProvider component to wrap your app
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);   // Store user info (e.g., {name, email, role})
+  const [user, setUser] = useState(() => {
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
+  });
   const [token, setToken] = useState(() => localStorage.getItem('token') || '');
 
-  // Login function
   const login = (userData, jwtToken) => {
     setUser(userData);
     setToken(jwtToken);
     localStorage.setItem('token', jwtToken);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
-  // Logout function
   const logout = () => {
     setUser(null);
     setToken('');
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
-
-  // You can expand this context with more features as needed
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout }}>
@@ -31,5 +30,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use the AuthContext
 export const useAuth = () => useContext(AuthContext);

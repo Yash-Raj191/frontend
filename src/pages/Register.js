@@ -6,6 +6,7 @@ const Register = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -16,14 +17,15 @@ const Register = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setLoading(true);
     try {
-      // Call your backend register API
-      await axios.post('http://localhost:5000/api/auth/register', form);
+      await axios.post('/api/auth/register', form);
       setSuccess('Registration successful! Please login.');
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     }
+    setLoading(false);
   };
 
   return (
@@ -56,7 +58,9 @@ const Register = () => {
           onChange={handleChange}
           required
         /><br />
-        <button type="submit">Register</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Registering...' : 'Register'}
+        </button>
       </form>
       <p>
         Already have an account? <a href="/login">Login</a>
