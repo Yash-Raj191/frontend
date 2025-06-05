@@ -10,10 +10,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/Login" element={<Login />} />
+        <Route path="/Register" element={<Register />} />
         <Route
-          path="/dashboard"
+          path="/Dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
@@ -21,7 +21,7 @@ function App() {
           }
         />
         <Route
-          path="/upload"
+          path="/Upload"
           element={
             <ProtectedRoute>
               <Upload />
@@ -29,7 +29,7 @@ function App() {
           }
         />
         <Route
-          path="/history"
+          path="/History"
           element={
             <ProtectedRoute>
               <History />
