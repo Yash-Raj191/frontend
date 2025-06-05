@@ -1,14 +1,39 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Bar, Pie, Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend
+);
 
 const Upload = () => {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [analysis, setAnalysis] = useState(null);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setMessage('');
+    setAnalysis(null);
   };
 
   const handleSubmit = async (e) => {
@@ -30,13 +55,57 @@ const Upload = () => {
         },
       });
       setMessage('File uploaded successfully!');
-      // You can also handle the response data here (e.g., show a preview)
+      setAnalysis(res.data.analysis); // Expect backend to return analysis
     } catch (err) {
       setMessage(
         err.response?.data?.message || 'File upload failed. Please try again.'
       );
+      setAnalysis(null);
     }
     setUploading(false);
+  };
+
+  // Helper to render charts if analysis is present
+  const renderCharts = () => {
+    if (!analysis) return null;
+    // Example: analysis = { labels: [], values: [] }
+    const chartData = {
+      labels: analysis.labels,
+      datasets: [
+        {
+          label: 'Values',
+          data: analysis.values,
+          backgroundColor: 'rgba(75,192,192,0.6)',
+        },
+      ],
+    };
+    return (
+      <div style={{ marginTop: 30 }}>
+        <h3>Bar Chart</h3>
+        <Bar data={chartData} />
+        <h3>Line Chart</h3>
+        <Line data={chartData} />
+        <h3>Pie Chart</h3>
+        <Pie
+          data={{
+            labels: analysis.labels,
+            datasets: [
+              {
+                data: analysis.values,
+                backgroundColor: [
+                  '#FF6384',
+                  '#36A2EB',
+                  '#FFCE56',
+                  '#4BC0C0',
+                  '#9966FF',
+                  '#FF9F40',
+                ],
+              },
+            ],
+          }}
+        />
+      </div>
+    );
   };
 
   return (
@@ -53,10 +122,16 @@ const Upload = () => {
         </button>
       </form>
       {message && (
-        <div style={{ marginTop: 20, color: message.includes('success') ? 'green' : 'red' }}>
+        <div
+          style={{
+            marginTop: 20,
+            color: message.includes('success') ? 'green' : 'red',
+          }}
+        >
           {message}
         </div>
       )}
+      {renderCharts()}
     </div>
   );
 };
