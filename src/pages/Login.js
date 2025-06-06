@@ -19,7 +19,10 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
-      const res = await axios.post('/api/auth/login', form);
+      const res = await axios.post('/api/auth/login', {
+        email: form.email.trim(),
+        password: form.password
+      });
       login(res.data.user, res.data.token);
 
       // Role-based redirect

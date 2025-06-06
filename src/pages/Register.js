@@ -15,11 +15,16 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setError('');
     setSuccess('');
     setLoading(true);
     try {
-      await axios.post('/api/auth/register', form);
+      await axios.post('/api/auth/register', {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        password: form.password
+      });
       setSuccess('Registration successful! Please login.');
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
