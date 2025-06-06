@@ -12,6 +12,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { useAuth } from '../context/AuthContext';
 
 ChartJS.register(
   CategoryScale,
@@ -29,6 +30,7 @@ const Upload = () => {
   const [message, setMessage] = useState('');
   const [uploading, setUploading] = useState(false);
   const [analysis, setAnalysis] = useState(null);
+  const { token } = useAuth();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -48,10 +50,10 @@ const Upload = () => {
 
     setUploading(true);
     try {
-      // Adjust the URL if your backend endpoint is different
       const res = await axios.post('/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
         },
       });
       setMessage('File uploaded successfully!');

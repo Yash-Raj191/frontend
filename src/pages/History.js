@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
+import { useAuth } from '../context/AuthContext';
 
 const History = () => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await axios.get('/api/history');
+        const res = await axios.get('/api/history', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setHistory(res.data.history || []);
       } catch (err) {
         setHistory([]);
@@ -17,7 +23,7 @@ const History = () => {
       setLoading(false);
     };
     fetchHistory();
-  }, []);
+  }, [token]);
 
   return (
     <div style={{padding: '30px'}}>
